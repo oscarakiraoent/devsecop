@@ -29,15 +29,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3 # Checkout kode agar Trivy bisa memindai filesystem jika diperlukan
-      - name: Run Trivy Container Scan
-        uses: aquasecurity/trivy-action@v0.57.1
-        with:
-          image-ref: 'docker.io/akiraoscar/digitalskola:main'
-          severity: 'CRITICAL,HIGH'
-          format: 'json'
-          output: trivy-report.json
-          exit-code: '1'
+        uses: actions/checkout@v3 # Checkout kode agar Docker build bisa mengakses Dockerfile
+      - name: Set up Docker Buildx # Setup Docker Buildx untuk buildkit
+        uses: docker/setup-buildx-action@v2
+      - name: Build Docker image # Langkah Docker build ditambahkan di sini
+        run: |
+          docker build -t my-app-image:latest . # Build image dengan tag my-app-image:latest
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install wget -y
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.deb
+          sudo dpkg -i trivy_0.29.0_Linux-64bit.deb
+      - name: Scan Docker image with Trivy
+        id: trivy_scan
+        run: |
+          trivy image --exit-code 1 --no-progress my-app-image:latest # Scan image yang baru di-build
       - name: Upload Trivy Report
         uses: actions/upload-artifact@v4
         if: always()

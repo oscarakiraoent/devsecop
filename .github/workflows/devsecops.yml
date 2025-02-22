@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v3 # Pastikan versi v3 benar, cek marketplace jika perlu
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -22,16 +22,16 @@ jobs:
           report_path: gitleaks-report.json
 
       - name: Run Trivy Container Scan
-        uses: aquasecurity/trivy-action@v0 # Pastikan versi v0 benar, cek marketplace jika perlu
+        uses: aquasecurity/trivy-action@v0
         with:
-          image-ref: 'your-docker-repo/your-image-name:latest' # Ganti dengan nama image Anda
+          image-ref: 'your-docker-repo/your-image-name:latest' # Replace with your image name
           severity: 'CRITICAL,HIGH'
           format: 'json'
           output: 'trivy-report.json'
           exit-code: '1'
 
       - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4 # Perbarui ke versi v4
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: trivy-report

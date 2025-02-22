@@ -31,7 +31,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3 # Checkout kode agar Trivy bisa memindai filesystem jika diperlukan
       - name: Run Trivy Container Scan
-        uses: aquasecurity/trivy-action@v0.28.0
+        uses: aquasecurity/trivy-action@v0.29.0
         with:
           image-ref: 'docker.io/akiraoscar/digitalskola:main'
           severity: 'CRITICAL,HIGH'

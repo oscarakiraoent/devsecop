@@ -9,17 +9,38 @@ on:
       - main  # Trigger on pull requests targeting the 'main' branch
 
 jobs:
-  scan:
-    name: gitleaks
+  gitleaks_scan: # Job untuk Gitleaks Scan
+    name: Gitleaks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - run: wget -O .gitleaks.toml https://raw.githubusercontent.com/tanookiai/central-configuration/master/config/gitleaks.toml
-      - name: confirm file
+      - name: Confirm file
         run: |
           cat .gitleaks.toml
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  trivy_scan: # Job untuk Trivy Scan
+    name: Trivy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3 # Checkout kode agar Trivy bisa memindai filesystem jika diperlukan
+      - name: Run Trivy Container Scan
+        uses: aquasecurity/trivy-action@v0
+        with:
+          image-ref: 'your-docker-repo/your-image-name:latest' # Ganti dengan nama image container Anda!
+          severity: 'CRITICAL,HIGH'
+          format: 'json'
+          output: trivy-report.json
+          exit-code: '1'
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-report
+          path: trivy-report.json

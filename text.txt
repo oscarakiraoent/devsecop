@@ -1,1 +1,1 @@
-PASSWORD : 1131323
+This is a fake secret key: API_KEY=12345abcd
